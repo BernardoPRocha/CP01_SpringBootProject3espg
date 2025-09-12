@@ -13,7 +13,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "alunos")
+@Table(name = "Alunos")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,14 +24,14 @@ public class Aluno {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "O nome é obrigatório")
+    @NotBlank(message = "O nome deve ser informado")
     private String nome;
 
-    @NotBlank(message = "O CPF é obrigatório")
+    @NotBlank(message = "O CPF deve ser informado")
     @Column(unique = true, nullable = false)
     private String cpf;
 
-    @Past(message = "A data de nascimento deve ser no passado")
+    @Past(message = "A data de nascimento deve ser compativel")
     private LocalDate dataNascimento;
 
     @Enumerated(EnumType.STRING)
@@ -43,5 +43,5 @@ public class Aluno {
 
     @ManyToOne
     @JoinColumn(name = "instrutor_id")
-    private Instrutor instrutor; // aluno vinculado a um instrutor
+    private Instrutor instrutor;
 }
