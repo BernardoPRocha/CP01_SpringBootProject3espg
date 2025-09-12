@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/alunos")
+@RequestMapping("/Alunos")
 public class AlunoController {
 
     @Autowired
@@ -24,7 +24,7 @@ public class AlunoController {
     @Transactional
     public void cadastrar(@RequestBody @Valid DadosCadastroAluno dados) {
         Instrutor instrutor = instrutorRepository.findById(dados.instrutorId())
-                .orElseThrow(() -> new RuntimeException("Instrutor não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Instrutor não Localizado"));
 
         Aluno aluno = new Aluno(
                 null,
@@ -38,7 +38,7 @@ public class AlunoController {
         alunoRepository.save(aluno);
     }
 
-    // Listar alunos (com paginação)
+    
     @GetMapping
     public Page<DadosListagemAluno> listar(Pageable paginacao) {
         return alunoRepository.findAll(paginacao).map(DadosListagemAluno::new);
