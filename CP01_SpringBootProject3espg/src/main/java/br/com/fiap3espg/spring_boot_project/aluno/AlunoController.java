@@ -20,8 +20,6 @@ public class AlunoController {
         repository.save(new Aluno(
                 null,
                 dados.nome(),
-                null,              // email não existe em DadosCadastroAluno
-                null,              // telefone não existe em DadosCadastroAluno
                 dados.cpf(),
                 dados.endereco(),
                 true
