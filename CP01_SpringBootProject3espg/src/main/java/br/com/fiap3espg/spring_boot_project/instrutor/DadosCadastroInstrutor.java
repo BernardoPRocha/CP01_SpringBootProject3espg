@@ -17,7 +17,7 @@ public record DadosCadastroInstrutor(
         String email,
 
         @NotBlank
-        String telefone,   // ➝ Adicionado para seguir o enunciado
+        String telefone,   
 
         @NotBlank
         @Pattern(regexp = "\\d{9,11}")
