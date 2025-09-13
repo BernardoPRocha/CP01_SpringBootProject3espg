@@ -20,6 +20,8 @@ public class AlunoController {
         repository.save(new Aluno(
                 null,
                 dados.nome(),
+                null,              
+                null,              
                 dados.cpf(),
                 dados.endereco(),
                 true

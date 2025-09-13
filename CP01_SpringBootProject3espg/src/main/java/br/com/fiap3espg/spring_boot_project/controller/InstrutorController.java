@@ -22,7 +22,7 @@ public class InstrutorController {
                 null,
                 dados.nome(),
                 dados.email(),
-                dados.telefone(),   // agora existe ✅
+                dados.telefone(),   
                 dados.cnh(),
                 dados.especialidade(),
                 dados.endereco(),
