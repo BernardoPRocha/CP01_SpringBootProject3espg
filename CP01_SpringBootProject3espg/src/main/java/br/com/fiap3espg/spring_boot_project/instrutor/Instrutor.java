@@ -2,61 +2,43 @@ package br.com.fiap3espg.spring_boot_project.instrutor;
 
 import br.com.fiap3espg.spring_boot_project.endereco.Endereco;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Entity
 @Table(name = "instrutores")
-@Entity(name = "Instrutor")
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Instrutor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String nome;
-    String email;
-    String cnh;
+    private Long id;
+
+    private String nome;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    private String telefone;
+
+    @Column(unique = true, nullable = false)
+    private String cnh;
 
     @Enumerated(EnumType.STRING)
-    Especialidade especialidade;
+    private Especialidade especialidade;
 
     @Embedded
-    Endereco endereco;
+    private Endereco endereco;
 
-    public Instrutor(DadosCadastroInstrutor dados) {
-        this.nome = dados.nome();
-        this.email = dados.email();
-        this.cnh = dados.cnh();
-        this.especialidade = dados.especialidade();
-        this.endereco = new Endereco(dados.endereco());
-    }
+    @Column(nullable = false)
+    private Boolean ativo = true;
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getCnh() {
-        return cnh;
-    }
-
-    public Especialidade getEspecialidade() {
-        return especialidade;
-    }
-
-    public Endereco getEndereco() {
-        return endereco;
+    public void atualizar(String nome, String telefone, Endereco endereco) {
+        if (nome != null) this.nome = nome;
+        if (telefone != null) this.telefone = telefone;
+        if (endereco != null) this.endereco.atualizar(endereco);
     }
 }

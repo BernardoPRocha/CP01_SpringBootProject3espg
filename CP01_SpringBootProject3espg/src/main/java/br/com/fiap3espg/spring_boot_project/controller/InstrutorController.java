@@ -1,32 +1,53 @@
 package br.com.fiap3espg.spring_boot_project.controller;
 
-import br.com.fiap3espg.spring_boot_project.instrutor.DadosCadastroInstrutor;
-import br.com.fiap3espg.spring_boot_project.instrutor.DadosListagemInstrutor;
-import br.com.fiap3espg.spring_boot_project.instrutor.Instrutor;
-import br.com.fiap3espg.spring_boot_project.instrutor.InstrutorRepository;
+import br.com.fiap3espg.spring_boot_project.instrutor.*;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/instrutor")
+@RequestMapping("/instrutores")
 public class InstrutorController {
 
     @Autowired
-    InstrutorRepository repository;
+    private InstrutorRepository repository;
 
     @PostMapping
     @Transactional
-    public void cadastrarInstrutor(@RequestBody @Valid DadosCadastroInstrutor dados) {
-        //System.out.println(dados);
-        repository.save(new Instrutor(dados));
+    public void cadastrar(@RequestBody DadosCadastroInstrutor dados) {
+        repository.save(new Instrutor(
+                null,
+                dados.nome(),
+                dados.email(),
+                dados.telefone(),   // agora existe ✅
+                dados.cnh(),
+                dados.especialidade(),
+                dados.endereco(),
+                true
+        ));
     }
 
     @GetMapping
-    public List<DadosListagemInstrutor> listarInstrutores() {
-        return repository.findAll().stream().map(DadosListagemInstrutor::new).toList();
+    public Page<DadosListagemInstrutor> listar(
+            @PageableDefault(size = 10, sort = {"nome"}) Pageable pageable) {
+        return repository.findAllByAtivoTrue(pageable)
+                .map(DadosListagemInstrutor::new);
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public void atualizar(@PathVariable Long id, @RequestBody DadosAtualizacaoInstrutor dados) {
+        var instrutor = repository.getReferenceById(id);
+        instrutor.atualizar(dados.nome(), dados.telefone(), dados.endereco());
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public void excluir(@PathVariable Long id) {
+        var instrutor = repository.getReferenceById(id);
+        instrutor.setAtivo(false);
     }
 }

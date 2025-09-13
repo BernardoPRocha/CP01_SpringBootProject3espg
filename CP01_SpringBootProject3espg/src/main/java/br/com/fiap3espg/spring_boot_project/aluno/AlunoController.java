@@ -1,12 +1,10 @@
 package br.com.fiap3espg.spring_boot_project.aluno;
 
-import br.com.fiap3espg.spring_boot_project.instrutor.Instrutor;
-import br.com.fiap3espg.spring_boot_project.instrutor.InstrutorRepository;
-import jakarta.validation.Valid;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,33 +12,40 @@ import org.springframework.web.bind.annotation.*;
 public class AlunoController {
 
     @Autowired
-    private AlunoRepository alunoRepository;
+    private AlunoRepository repository;
 
-    @Autowired
-    private InstrutorRepository instrutorRepository;
-
-    // Cadastrar aluno
     @PostMapping
     @Transactional
-    public void cadastrar(@RequestBody @Valid DadosCadastroAluno dados) {
-        Instrutor instrutor = instrutorRepository.findById(dados.instrutorId())
-                .orElseThrow(() -> new RuntimeException("Instrutor não encontrado"));
-
-        Aluno aluno = new Aluno(
+    public void cadastrar(@RequestBody DadosCadastroAluno dados) {
+        repository.save(new Aluno(
                 null,
                 dados.nome(),
+                null,              // email não existe em DadosCadastroAluno
+                null,              // telefone não existe em DadosCadastroAluno
                 dados.cpf(),
-                dados.dataNascimento(),
-                dados.categoria(),
                 dados.endereco(),
-                instrutor
-        );
-        alunoRepository.save(aluno);
+                true
+        ));
     }
 
-    // Listar alunos (com paginação)
     @GetMapping
-    public Page<DadosListagemAluno> listar(Pageable paginacao) {
-        return alunoRepository.findAll(paginacao).map(DadosListagemAluno::new);
+    public Page<DadosListagemAluno> listar(
+            @PageableDefault(size = 10, sort = {"nome"}) Pageable pageable) {
+        return repository.findAllByAtivoTrue(pageable)
+                .map(DadosListagemAluno::new);
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public void atualizar(@PathVariable Long id, @RequestBody DadosAtualizacaoAluno dados) {
+        var aluno = repository.getReferenceById(id);
+        aluno.atualizar(dados.nome(), dados.telefone(), dados.endereco());
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public void excluir(@PathVariable Long id) {
+        var aluno = repository.getReferenceById(id);
+        aluno.setAtivo(false);
     }
 }
